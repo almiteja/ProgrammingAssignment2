@@ -3,7 +3,7 @@
 
 ## This function creates an object containing a matrix the user passes as an 
 ## argument, and also defines functions that allow the user to change the 
-## matrix, or to cache the inverse of the chosen matrix by applying the following
+## matrix, or to cache the inverse of the chosen matrix by applying the second function
 ## function.
 
 makeCacheMatrix <- function(x = matrix()) {
@@ -13,8 +13,10 @@ makeCacheMatrix <- function(x = matrix()) {
                 m <<- NULL      ##outside the function.
         }
         get <- function() x     
-        setinverse <- function(inverse) m <<- inverse ##can be called outside
-        getinverse <- function() m                      ##the function to fo
+        setinverse <- function(inverse) m <<- inverse 
+        ##can be called by another function. When it sets m to the value supplied as an argument in the other function, 
+        ## m is available to the other function even though it was defined in this function.
+        getinverse <- function() m      ##returns m when called in another function.
         list(set = set, get = get,
              setinverse = setinverse,
              getinverse = getinverse)
@@ -31,11 +33,11 @@ cacheSolve <- function(x, ...) {
         ## Return a matrix that is the inverse of 'x'
         m <- x$getinverse() ##will set m to the inverse, if the inverse is cached
         if(!is.null(m)) {
-                message("getting cached data")
+                message("getting cached data")  ##tells the user that m was cached, not solved again.
                 return(m)       ## returns cached m if it is available.
         }
-        data <- x$get()         ## retrieves the specified matrix from the list created above
-        m <- solve(data, ...)   ## inverts the matrix and stores it to m
+        data <- x$get()         ## if m is NULL, this line retrieves the specified matrix from the first function
+        m <- solve(data, ...)   ## inverts the matrix and stores it to m using the built-in SOLVE() function
         x$setinverse(m)         ## calls the set inverse function which writes m to the cache
         m                       ## prints the inverse
 }
